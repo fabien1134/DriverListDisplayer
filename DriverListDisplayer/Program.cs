@@ -1,13 +1,8 @@
 ﻿using DriverListDisplayer.Interfaces;
-using DriverListDisplayer.Model;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DriverListDisplayer
@@ -49,16 +44,17 @@ namespace DriverListDisplayer
 
 
 
-            //Create a list of file names
+            var driverList = new DriverListProceser();
 
-
-
-
-            //
-
-
-
-
+            try
+            {
+                string orderedDriverList = driverList.ProcessList(driverRecords);
+                Console.WriteLine(orderedDriverList);
+            }
+            catch (Exception e)
+            {
+                 Console.WriteLine("Issue parsing file" + e.Message);
+            }
         }
     }
 }
