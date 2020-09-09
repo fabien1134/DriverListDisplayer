@@ -14,26 +14,25 @@ namespace DriverListDisplayer.Model
         public void UpdateAppropriateCol(string colHeader, string colValue)
         {
 
-            switch (colHeader)
+
+            if (RecordFields.Team == colHeader)
             {
-                case "Team":
-                    Team = colValue.Trim();
-                    break;
-                case "Name":
-                    Name = colValue?.Trim();
-                    break;
-                case "Race Number":
-                    if (!int.TryParse(colValue, out int raceNumber)) return;
-                    RaceNumber = raceNumber;
-                    break;
-                case "Order":
-                    if (!int.TryParse(colValue, out int orderNumber)) return;
-                    Order = orderNumber;
-                    break;
+                  Team = colValue.Trim();
             }
+            else if (RecordFields.Name == colHeader)
+            {
+                  Name = colValue?.Trim();
+            }
+            else if(RecordFields.RaceNumber == colHeader)
+            {
+                if (!int.TryParse(colValue, out int raceNumber)) return;
+                RaceNumber = raceNumber;
+            }
+            else if(RecordFields.Order == colHeader)
+            {
+                if (!int.TryParse(colValue, out int orderNumber)) return;
+                Order = orderNumber;
+            }    
         }
-
-
-
     }
 }

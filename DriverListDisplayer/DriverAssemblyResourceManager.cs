@@ -6,28 +6,22 @@ using System.Reflection;
 
 namespace DriverListDisplayer
 {
-    public static class DriverAssemblyResourceManager
+    public class DriverAssemblyResourceManager
     {
         private const string ContainingDirectory = "Resources";
-        public static bool GetDriverFileNames(string assemblyLocation, string directoryRootPath, out List<string> fileNames)
+        private readonly FileHandler _fileHandler;
+        public DriverAssemblyResourceManager(FileHandler fileHandler) => _fileHandler = fileHandler;
+
+
+        public bool GetDriverFileNames(string assemblyLocation, string directoryRootPath, out List<string> fileNames)
         {
             fileNames = new List<string>();
-            var result = string.Empty;
-            //Get the file names from the assembly
-            var assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream(assemblyLocation))
-            {
-                if (stream == null)
-                {
-                    Console.WriteLine("Could not find the DriverListFileNames resource");
-                    return false;
-                }
 
-                using StreamReader reader = new StreamReader(stream);
-                result = reader.ReadToEnd();
-            }
+            var (fileContents, retrievalSucceeded) = _fileHandler.GetFileContents(assemblyLocation);
 
-            if (IsFileContentValid(result, out fileNames))
+            if (!retrievalSucceeded) return false;
+
+            if (IsFileContentValid(fileContents, out fileNames))
             {
                 UpdateFileNames(directoryRootPath, ContainingDirectory, fileNames);
                 return true;
@@ -37,7 +31,7 @@ namespace DriverListDisplayer
         }
 
 
-        private static void UpdateFileNames(string rootName, string containingDirectory, List<string> fileNames)
+        private void UpdateFileNames(string rootName, string containingDirectory, List<string> fileNames)
         {
             for (int i = 0; i < fileNames.Count; i++)
             {
@@ -46,7 +40,7 @@ namespace DriverListDisplayer
         }
 
 
-        public static bool IsFileContentValid(string fileContents, out List<string> fileNames)
+        public bool IsFileContentValid(string fileContents, out List<string> fileNames)
         {
             fileNames = fileContents.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)?.ToList();
             return fileNames.Count >= 1;

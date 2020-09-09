@@ -11,15 +11,17 @@ namespace DriverListDisplayer
     {
         //Could populate the expeted header name and type mapping from an external source. 
         private readonly Dictionary<string, ColumnInfo> _expectedDriverHeadingTypeMapping;
+        private readonly FileHandler _fileHandler;
 
-        public DriverFileParser()
+        public DriverFileParser(FileHandler fileHandler)
         {
+            _fileHandler = fileHandler;
             _expectedDriverHeadingTypeMapping = new Dictionary<string, ColumnInfo>
             {
-                { "Team", new ColumnInfo(typeof(string))},
-                { "Name", new ColumnInfo(typeof(string))},
-                { "Race Number", new ColumnInfo(typeof(int))},
-                { "Order", new ColumnInfo(typeof(int)) }
+                { RecordFields.Team, new ColumnInfo(typeof(string))},
+                { RecordFields.Name, new ColumnInfo(typeof(string))},
+                { RecordFields.RaceNumber, new ColumnInfo(typeof(int))},
+                { RecordFields.Order, new ColumnInfo(typeof(int)) }
             };
         }
 
@@ -27,29 +29,18 @@ namespace DriverListDisplayer
         public bool ParseDriverFile(string fileName, out List<IRecord> records)
         {
             records = new List<IRecord>();
+            var (fileContents, retrievalSucceeded) = _fileHandler.GetFileContents(fileName, FileMode.Open);
 
-            var result = string.Empty;
+            if (!retrievalSucceeded) return false;
 
-            using (var fileStream = new FileStream(fileName, FileMode.Open))
-            {
-                if (fileStream == null)
-                {
-                    Console.WriteLine("Could not find the driver file");
-                    return false;
-                }
-
-                using var streamReader = new StreamReader(fileStream);
-                result = streamReader.ReadToEnd();
-            }
-
-            return IsFileContentValid(result, out records);
+            return IsFileContentValid(fileContents, out records);
         }
 
 
         public bool IsFileContentValid(string fileContents, out List<IRecord> records)
         {
             records = new List<IRecord>();
-
+            if (string.IsNullOrEmpty(fileContents)) return false;
             var fileLines = fileContents.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)?.ToList();
 
             if (fileLines.Count < 2) return false;
@@ -58,8 +49,6 @@ namespace DriverListDisplayer
 
             return CheckRecordsAreValid(fileLines.Skip(1).ToList(), records);
         }
-
-
 
 
         private bool CheckRecordsAreValid(List<string> colRecords, List<IRecord> records)
@@ -101,6 +90,7 @@ namespace DriverListDisplayer
 
         private bool CheckHeadingsAreValid(string colHeadings)
         {
+            if (string.IsNullOrEmpty(colHeadings)) return false;
             var headings = colHeadings.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)?.ToList();
 
             //Ensure the expected heading amount is met
@@ -118,7 +108,6 @@ namespace DriverListDisplayer
 
                 return true;
             }
-
 
             return false;
         }

@@ -13,10 +13,12 @@ namespace DriverListDisplayer
         {
 
             List<string> driveFileNames = null;
+            var fileHandler = new FileHandler();
+            var driverAssemblyResourceManager = new DriverAssemblyResourceManager(fileHandler);
             //Get the file names from the driver file name assembly resource
             try
             {
-                if (!DriverAssemblyResourceManager.GetDriverFileNames("DriverListDisplayer.Resources.DriverListFileNames.txt", Directory.GetCurrentDirectory(), out driveFileNames))
+                if (!driverAssemblyResourceManager.GetDriverFileNames("DriverListDisplayer.Resources.DriverListFileNames.txt", Directory.GetCurrentDirectory(), out driveFileNames))
                 {
                     return;
                 }
@@ -34,7 +36,7 @@ namespace DriverListDisplayer
 
             Parallel.ForEach(driveFileNames, (fileName) =>
           {
-              IFileParser fileParser = new DriverFileParser();
+              IFileParser fileParser = new DriverFileParser(fileHandler);
 
               if (fileParser.ParseDriverFile(fileName, out var records))
               {
@@ -55,6 +57,9 @@ namespace DriverListDisplayer
             {
                  Console.WriteLine("Issue parsing file" + e.Message);
             }
+
+
+            Console.ReadLine();
         }
     }
 }
