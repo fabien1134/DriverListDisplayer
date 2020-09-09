@@ -36,7 +36,7 @@ namespace DriverListDisplayer
             {
                 Parallel.ForEach(driveFileNames, (fileName) =>
                    {
-                       IFileParser fileParser = new DriverFileParser(fileHandler);
+                       IFileParser fileParser = new DriverFileParser(new FileHandler());
 
                        if (fileParser.ParseDriverFile(fileName, out var records))
                        {
