@@ -35,7 +35,7 @@ namespace DriverListDisplayer
                 if (fileStream == null)
                 {
                     Console.WriteLine("Could not find the driver file");
-                    return (string.Empty, false);
+                    return (result, false);
                 }
 
                 using var streamReader = new StreamReader(fileStream);
