@@ -25,24 +25,30 @@ namespace DriverListDisplayer
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error retrieving file names - {ex.Message}");
-                Console.ReadLine();
+                DisplayErrorMessage($"Error retrieving file names - {ex.Message}");
                 return;
             }
 
 
             var driverRecords = new ConcurrentBag<List<IRecord>>();
 
+            try
+            {
+                Parallel.ForEach(driveFileNames, (fileName) =>
+                   {
+                       IFileParser fileParser = new DriverFileParser(fileHandler);
 
-            Parallel.ForEach(driveFileNames, (fileName) =>
-          {
-              IFileParser fileParser = new DriverFileParser(fileHandler);
-
-              if (fileParser.ParseDriverFile(fileName, out var records))
-              {
-                  driverRecords.Add(records);
-              }
-          });
+                       if (fileParser.ParseDriverFile(fileName, out var records))
+                       {
+                           driverRecords.Add(records);
+                       }
+                   });
+            }
+            catch (Exception e)
+            {
+                DisplayErrorMessage("Issue parsing file" + e.Message);
+                return;
+            }
 
 
 
@@ -55,10 +61,18 @@ namespace DriverListDisplayer
             }
             catch (Exception e)
             {
-                 Console.WriteLine("Issue parsing file" + e.Message);
+                DisplayErrorMessage("Issue processing list" + e.Message);
+                return;
             }
 
             //Keep the output displayed
+            Console.ReadLine();
+        }
+
+
+        private static void DisplayErrorMessage(string errorMessage)
+        {
+            Console.WriteLine(errorMessage);
             Console.ReadLine();
         }
     }
