@@ -1,4 +1,5 @@
 ﻿using DriverListDisplayer.Interfaces;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,11 @@ namespace DriverListDisplayer
     {
         public string ProcessList(ConcurrentBag<List<IRecord>> driverRecords)
         {
+            if(driverRecords==null || driverRecords.Count == 0)
+            {
+                throw new Exception("No driver records to process");
+            }
+
             var orderedList = new List<IRecord>();
             var output = new StringBuilder();
 

@@ -58,7 +58,7 @@ namespace DriverListDisplayer
                  Console.WriteLine("Issue parsing file" + e.Message);
             }
 
-
+            //Keep the output displayed
             Console.ReadLine();
         }
     }
