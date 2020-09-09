@@ -30,7 +30,7 @@ namespace DriverListDisplayer
         {
             var result = string.Empty;
 
-            using (var fileStream = new FileStream(fileName, FileMode.Open))
+            using (var fileStream = new FileStream(fileName, fileMode))
             {
                 if (fileStream == null)
                 {
